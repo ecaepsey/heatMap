@@ -11,6 +11,10 @@ import SwiftUI
 struct HeatMapApp: App {
     var body: some Scene {
         WindowGroup {
+            let cal = Calendar.current
+            let today = cal.startOfDay(for: Date())
+
+            var daily: [Date: Int] = [:]
             ContentView()
         }
     }
