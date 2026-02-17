@@ -13,6 +13,15 @@ struct HeatMap: View {
     var gap: CGFloat
     var weeks: Int
     var levels: [Int]
+    
+    let events: [ActivityEvent]
+
+       // пример: последние 20
+       var recentEvents: [ActivityEvent] {
+           events.sorted { $0.date > $1.date }.prefix(20).map { $0 }
+       }
+    
+    
     private func color(level: Int) -> Color {
          switch level {
          case 0: return Color(.systemGray5)
@@ -24,22 +33,28 @@ struct HeatMap: View {
      }
     
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-                 HStack(spacing: gap) {
-                     ForEach(0..<weeks, id: \.self) { w in
-                         VStack(spacing: gap) {
-                             ForEach(0..<7, id: \.self) { d in
-                                 let idx = w * 7 + d
-                                 RoundedRectangle(cornerRadius: 3)
-                                     .fill(color(level: levels[safe: idx] ?? 0))
-                                     .frame(width: cell, height: cell)
+        VStack {
+            ScrollView(.horizontal, showsIndicators: false) {
+                     HStack(spacing: gap) {
+                         ForEach(0..<weeks, id: \.self) { w in
+                             VStack(spacing: gap) {
+                                 ForEach(0..<7, id: \.self) { d in
+                                     let idx = w * 7 + d
+                                     RoundedRectangle(cornerRadius: 3)
+                                         .fill(color(level: levels[safe: idx] ?? 0))
+                                         .frame(width: cell, height: cell)
+                                 }
                              }
                          }
                      }
+                     .padding(.vertical, 8)
                  }
-                 .padding(.vertical, 8)
-             }
-             .frame(height: (cell * 7) + (gap * 6))
+                 .frame(height: (cell * 7) + (gap * 6))
+            
+            
+            ActivityListUnderHeatmap(events: recentEvents)
+        }
+        
     }
 }
 extension Array {

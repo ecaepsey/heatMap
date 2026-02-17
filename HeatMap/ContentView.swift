@@ -7,7 +7,14 @@
 
 import SwiftUI
 import Foundation
+let activityEvent = [
+    ActivityEvent(date: Date(), type: .coding, value: 1),
+    ActivityEvent(date: Date(), type: .english, value: 1),
+    ActivityEvent(date: Date(), type: .gym, value: 1),
+
+]
 struct ContentView: View {
+   
     struct ActivityEvent {
       
         let date: Date
@@ -95,13 +102,22 @@ struct ContentView: View {
         
         
     }
+    
+   
         
         
         var body: some View {
             
+            TabView {
+                       Tab("Home", systemImage: "house") {
+                           HeatMap(cell: 14, gap: 4, weeks: 15, levels: buildLevelsLastWeeks(dailyScore: daily(), weeks: 16), events: activityEvent)
+                       }
+                      
+                   }
             
             
-             HeatMap(cell: 14, gap: 14, weeks: 15, levels: buildLevelsLastWeeks(dailyScore: daily(), weeks: 16))
+            
+             
             
             
                 .padding()
