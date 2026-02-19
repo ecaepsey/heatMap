@@ -13,8 +13,9 @@ struct HeatMap: View {
     var gap: CGFloat
     var weeks: Int
     var levels: [Int]
+    @State private var showingAdd = false
     
-    let events: [ActivityEvent]
+    @State private var events: [ActivityEvent] = []
 
        // пример: последние 20
        var recentEvents: [ActivityEvent] {
@@ -34,6 +35,16 @@ struct HeatMap: View {
     
     var body: some View {
         VStack {
+            HStack {
+                                Text("Activity").font(.largeTitle).bold()
+                                Spacer()
+                                Button {
+                                    showingAdd = true
+                                } label: {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.system(size: 28))
+                                }
+                            }
             ScrollView(.horizontal, showsIndicators: false) {
                      HStack(spacing: gap) {
                          ForEach(0..<weeks, id: \.self) { w in
@@ -54,6 +65,13 @@ struct HeatMap: View {
             
             ActivityListUnderHeatmap(events: recentEvents)
         }
+        .sheet(isPresented: $showingAdd) {
+                   AddActivitySheet { type, value in
+                       // ✅ Add activity "today" (now)
+                       let newEvent = ActivityEvent(date: .now, type: type, value: value)
+                       events.append(newEvent)
+                   }
+               }
         
     }
 }
@@ -61,5 +79,44 @@ extension Array {
     subscript(safe index: Int) -> Element? {
         guard indices.contains(index) else { return nil }
         return self[index]
+    }
+}
+
+
+struct AddActivitySheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var type: ActivityType = .english
+    @State private var valueText: String = "20"
+
+    let onSave: (ActivityType, Int) -> Void
+
+    var body: some View {
+        NavigationView {
+            Form {
+                Picker("Type", selection: $type) {
+                    Text("Gym").tag(ActivityType.gym)
+                    Text("English").tag(ActivityType.english)
+                    Text("Coding").tag(ActivityType.coding)
+                }
+
+                TextField(type == .gym ? "Sessions" : "Minutes", text: $valueText)
+                    .keyboardType(.numberPad)
+            }
+            .navigationTitle("Add Activity")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        let v = Int(valueText.trimmingCharacters(in: .whitespaces)) ?? 0
+                        guard v > 0 else { return }
+                        onSave(type, v)
+                        dismiss()
+                    }
+                }
+            }
+        }
     }
 }
