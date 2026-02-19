@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ActivityRow: View {
     let event: ActivityEvent
@@ -16,6 +17,36 @@ struct ActivityRow: View {
             return "\(event.value) session"
         case .english, .coding:
             return "\(event.value) min"
+        }
+    }
+    
+    func test() {
+        let view: AnyObject = UIButton()
+        
+        for label in view.subviews where label is UILabel {
+            print("Found a label \(label.frame)")
+        }
+        
+        for i in 1...100 where i % 8 == 0 {
+            print(i)
+        }
+        
+        for i in 1...20 where i % 3 == 0 && i % 5 == 0 {
+            
+        }
+        
+        
+        
+        let age = 36
+        
+        if (0 ..< 18).contains(age) {
+            
+        }
+        
+        if case 0 ..< 18 = age {
+            print("You have the energy and time, but not the money")
+        } else if case 18 ..< 70 = age {
+            print("some thing")
         }
     }
 
@@ -41,3 +72,17 @@ struct ActivityRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }
+
+
+class Singer {
+    let name: String
+    
+    init(name: String) {
+        self.name = name
+    }
+    
+    func reversedName() -> String {
+        return "\(name.uppercased().reversed())"
+    }
+}
+
