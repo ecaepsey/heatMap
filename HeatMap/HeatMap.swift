@@ -11,14 +11,16 @@ import SwiftUI
 struct HeatMap: View {
     var cell: CGFloat
     var gap: CGFloat
-    var weeks: Int
-    var levels: [Int]
+    
     @State private var showingAdd = false
     
     @State private var events: [ActivityEvent] = []
+    
+    
 
        // пример: последние 20
        var recentEvents: [ActivityEvent] {
+           
            events.sorted { $0.date > $1.date }.prefix(20).map { $0 }
        }
     
@@ -33,7 +35,77 @@ struct HeatMap: View {
          }
      }
     
+    func dateOnly(_ date: Date, calendar: Calendar = .current) -> Date {
+        return calendar.startOfDay(for: date)
+    }
+
+    /// Swift port of `_buildLevelsLastWeeks`
+    /// - Parameters:
+    ///   - dailyScore: map of Date(startOfDay) -> score for that day
+    ///   - weeks: number of week columns to show
+    ///   - calendar: calendar used for weekday + startOfDay calculations
+    /// - Returns: levels array of length `weeks * 7` with values in 0...4 (oldest -> newest)
+    func buildLevelsLastWeeks(
+        dailyScore: [Date: Int],
+        weeks: Int,
+        calendar: Calendar = .current
+    ) -> [Int] {
+        let today = calendar.startOfDay(for: Date())
+
+        let totalCells = weeks * 7
+        let daysBack = (totalCells - 1) // ✅ без mondayOffset
+
+        guard let start = calendar.date(byAdding: .day, value: -daysBack, to: today) else {
+            return Array(repeating: 0, count: totalCells)
+        }
+
+        var values: [Int] = []
+        values.reserveCapacity(totalCells)
+
+        for i in 0..<totalCells {
+            let day = calendar.date(byAdding: .day, value: i, to: start)!
+            let key = calendar.startOfDay(for: day)
+            values.append(dailyScore[key] ?? 0)
+        }
+
+        let maxRef = max(1, values.max() ?? 1)
+
+        return values.map { v in
+            if v <= 0 { return 0 }
+            let level = Int(floor((Double(v) / Double(maxRef)) * 4.0))
+            return min(max(level, 1), 4)
+        }
+    }
+    
+    func buildDailyScore(
+        events: [ActivityEvent],
+        calendar: Calendar = .current
+    ) -> [Date: Int] {
+        var result: [Date: Int] = [:]
+
+        for e in events {
+            let day = calendar.startOfDay(for: e.date)
+
+            // MVP scoring:
+            // gym: sessions * 2, others: minutes -> 1 point per 20 min
+            let score: Int
+            switch e.type {
+            case .gym:
+                score = 2 * e.value
+            case .english, .coding:
+                score = max(1, e.value / 20)
+            }
+
+            result[day, default: 0] += score
+        }
+
+        return result
+    }
+    
     var body: some View {
+        let weeks = 2
+        let dailyScore = buildDailyScore(events: events)
+        let levels = buildLevelsLastWeeks(dailyScore: dailyScore, weeks: weeks)
         VStack {
             HStack {
                                 Text("Activity").font(.largeTitle).bold()
@@ -63,17 +135,26 @@ struct HeatMap: View {
                  .frame(height: (cell * 7) + (gap * 6))
             
             
-            ActivityListUnderHeatmap(events: recentEvents)
+            
+            ActivityListUnderHeatmap(events: events.sorted { $0.date > $1.date })
+        }
+        .onAppear {
+            events.append(ActivityEvent(date: .now, type: .english, value: 20))
+            events.append(ActivityEvent(date: Calendar.current.date(byAdding: .day, value: -1, to: .now)!, type: .coding, value: 60))
         }
         .sheet(isPresented: $showingAdd) {
                    AddActivitySheet { type, value in
                        // ✅ Add activity "today" (now)
                        let newEvent = ActivityEvent(date: .now, type: type, value: value)
+                       print("events count:", events.count)
                        events.append(newEvent)
                    }
                }
         
+        
+        
     }
+        
 }
 extension Array {
     subscript(safe index: Int) -> Element? {
