@@ -107,16 +107,7 @@ struct HeatMap: View {
         let dailyScore = buildDailyScore(events: events)
         let levels = buildLevelsLastWeeks(dailyScore: dailyScore, weeks: weeks)
         VStack {
-            HStack {
-                                Text("Activity").font(.largeTitle).bold()
-                                Spacer()
-                                Button {
-                                    showingAdd = true
-                                } label: {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(.system(size: 28))
-                                }
-                            }
+           
             ScrollView(.horizontal, showsIndicators: false) {
                      HStack(spacing: gap) {
                          ForEach(0..<weeks, id: \.self) { w in
@@ -138,10 +129,7 @@ struct HeatMap: View {
             
             ActivityListUnderHeatmap(events: events.sorted { $0.date > $1.date })
         }
-        .onAppear {
-            events.append(ActivityEvent(date: .now, type: .english, value: 20))
-            events.append(ActivityEvent(date: Calendar.current.date(byAdding: .day, value: -1, to: .now)!, type: .coding, value: 60))
-        }
+      
         .sheet(isPresented: $showingAdd) {
                    AddActivitySheet { type, value in
                        // ✅ Add activity "today" (now)

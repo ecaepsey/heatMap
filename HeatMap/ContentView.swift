@@ -28,7 +28,7 @@ struct ContentView: View {
             
             TabView {
                        Tab("Home", systemImage: "house") {
-                           HeatMap(cell: 20, gap: 10)
+                         
                        }
                       
                    }

@@ -29,7 +29,7 @@ enum ActivityType: String {
     }
 }
 
-struct ActivityEvent: Identifiable {
+struct ActivityEvent: Identifiable, Equatable {
     let id = UUID()
     let date: Date
     let type: ActivityType
