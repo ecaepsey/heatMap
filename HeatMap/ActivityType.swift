@@ -9,7 +9,7 @@
 
 import Foundation
 
-enum ActivityType: String {
+enum ActivityType: String, Codable {
     case gym, english, coding
 
     var title: String {
@@ -29,9 +29,16 @@ enum ActivityType: String {
     }
 }
 
-struct ActivityEvent: Identifiable, Equatable {
-    let id = UUID()
+struct ActivityEvent: Identifiable, Equatable, Codable {
+    let id: UUID
     let date: Date
     let type: ActivityType
     let value: Int // gym: sessions, english/coding: minutes
+    
+    init(id: UUID = UUID(), date: Date, type: ActivityType, value: Int) {
+            self.id = id
+            self.date = date
+            self.type = type
+            self.value = value
+        }
 }

@@ -38,7 +38,7 @@ struct HomeView: View {
                             }
 
                   content
-              }
+        }
         .sheet(isPresented: $showingAdd) {
             AddActivitySheet { type, value in
                 // ✅ Add activity "today" (now)
@@ -51,20 +51,15 @@ struct HomeView: View {
     }
     
     @ViewBuilder
-      private var content: some View {
-          
-          
+    private var content: some View {
+      
+        // ✅ use state data in UI
+        let dailyScore = buildDailyScore(events: viewModel.state.activityEvents)
+        let levels = buildLevelsLastWeeks(dailyScore: dailyScore, weeks: 10)
         
+        HeatmapSection(levels: levels, events: viewModel.state.activityEvents)
         
-
-        
-              // ✅ use state data in UI
-          let dailyScore = buildDailyScore(events: viewModel.state.activityEvents)
-              let levels = buildLevelsLastWeeks(dailyScore: dailyScore, weeks: 10)
-
-              HeatmapSection(levels: levels, events: viewModel.state.activityEvents)
-          
-      }
+    }
     
     func buildDailyScore(
         events: [ActivityEvent],
@@ -180,3 +175,11 @@ struct HeatmapSection: View {
         }
     }
 }
+
+
+
+
+
+
+
+

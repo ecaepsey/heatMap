@@ -13,17 +13,24 @@ class HomeViewModel: ViewModel {
     
     private let coordinator: HomeCoordinatorProtocol
     
-    init(coordinator: HomeCoordinatorProtocol) {
+    private let getEvents: GetEventsUseCase
+    private let addEvent: AddEventsUseCase
+
+    
+    init(coordinator: HomeCoordinatorProtocol, getEvents: GetEventsUseCase, addEvent: AddEventsUseCase) {
         state = .init()
+       
+        self.getEvents = getEvents
+        self.addEvent = addEvent
         self.coordinator = coordinator
+        state.activityEvents = getEvents()
     }
     
     func handle(_ event: HomeViewEvent) {
         switch event {
       
         case .onAddNewEvent(let newEvent):
-                   state.activityEvents.append(newEvent)
-
+            state.activityEvents = addEvent(newEvent)
                }
         }
     
