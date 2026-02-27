@@ -33,6 +33,9 @@ struct ActivityRow: View {
         
         for i in 1...20 where i % 3 == 0 && i % 5 == 0 {
             
+            
+            
+            
         }
         
         
