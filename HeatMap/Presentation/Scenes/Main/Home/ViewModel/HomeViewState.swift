@@ -14,6 +14,7 @@ enum HomeViewEvent {
 
 struct HomeViewState: Equatable {
     var activityEvents: [ActivityEvent] = []
-       var isLoading: Bool = false
-       var error: String? = nil
+    var heatmapLevels: [Int] = []
+    var isLoading: Bool = false
+    var error: String? = nil
 }
