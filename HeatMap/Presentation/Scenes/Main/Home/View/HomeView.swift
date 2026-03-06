@@ -129,6 +129,8 @@ struct HeatmapSection: View {
                         }
                     }
                     .frame(height: monthLabelHeight)
+                    
+                    
 
                     // Heatmap grid
                     HStack(spacing: gap) {
