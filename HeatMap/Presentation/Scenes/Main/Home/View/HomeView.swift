@@ -132,6 +132,9 @@ struct HeatmapSection: View {
                     
                     
 
+                    
+                    
+                    
                     // Heatmap grid
                     HStack(spacing: gap) {
                         ForEach(0..<weeks, id: \.self) { w in
